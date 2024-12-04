@@ -39,8 +39,29 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run the tests with pytest
-                    sh './venv/bin/pytest tests/'
+                    // Run the tests with pytest and save the result to a file
+                    sh '''
+                    . venv/bin/activate
+                    pytest tests/ --maxfail=5 --disable-warnings --tb=short > result.log || true
+                    '''
+                }
+            }
+        }
+
+        stage('Post-build Actions') {
+            steps {
+                script {
+                    // Parse the result.log file to check if there are any failed tests
+                    def failedTests = sh(script: 'grep "E       " result.log || true', returnStdout: true).trim()
+
+                    if (failedTests) {
+                        // Send an email if there are failed tests
+                        emailext (
+                            subject: "Test Failures Detected in Jenkins Build #${currentBuild.number}",
+                            body: "The following tests failed:\n\n${failedTests}\n\nPlease review the build logs for more details.",
+                            to: "cheparthy.akash@smithsdetection.com"
+                        )
+                    }
                 }
             }
         }
