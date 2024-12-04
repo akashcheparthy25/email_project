@@ -2,24 +2,30 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_ENV = 'python3' // Adjust if your Python version is different
+        PYTHON_ENV = 'python3'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Clone the repository
-                git branch: 'main', url: 'https://github.com/username/project_email.git'
+                git branch: 'main', url: 'https://github.com/akashcheparthy25/email_project.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Create a virtual environment and install dependencies
-                    sh 'python3 -m venv venv'
-                    sh './venv/bin/pip install --upgrade pip'
-                    sh './venv/bin/pip install -r requirements.txt'
+                    // Verify if requirements.txt exists before attempting installation
+                    sh '''
+                    if [ -f requirements.txt ]; then
+                        python3 -m venv venv
+                        ./venv/bin/pip install --upgrade pip
+                        ./venv/bin/pip install -r requirements.txt
+                    else
+                        echo "requirements.txt not found"
+                        exit 1
+                    fi
+                    '''
                 }
             }
         }
@@ -27,7 +33,6 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run all test scripts and output results
                     sh './venv/bin/pytest tests/'
                 }
             }
