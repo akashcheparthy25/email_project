@@ -35,10 +35,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run the tests with pytest and save the result to a file
+                    // Run the tests with pytest and capture output into result.log
                     sh '''
                     . venv/bin/activate
-                    pytest tests/ --maxfail=5 --disable-warnings --tb=short > result.log || true
+                    pytest tests/ --maxfail=5 --disable-warnings --tb=short | tee result.log
                     '''
                 }
             }
@@ -54,11 +54,15 @@ pipeline {
                     echo "Failed Tests Found: ${failedTests}"
 
                     if (failedTests) {
-                        // Send email if failed tests exist
+                        // Send email if failed tests exist, no matter how many
                         emailext (
                             subject: "Test Failures Detected in Jenkins Build #${currentBuild.number}",
-                            body: "The following tests failed:\n\n${failedTests}\n\nPlease review the build logs for more details.",
-                            to: "cheparthyakash0925@.com"
+                            body: """
+                                The following tests failed:
+                                ${failedTests}
+                                Please review the build logs for more details.
+                            """,
+                            to: cheparthyakash0925@gmail.com"
                         )
                     } else {
                         echo "No failed tests found"
