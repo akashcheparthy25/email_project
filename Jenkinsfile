@@ -33,6 +33,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
+                    // Run the tests with pytest
                     sh './venv/bin/pytest tests/'
                 }
             }
