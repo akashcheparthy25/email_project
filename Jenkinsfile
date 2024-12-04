@@ -62,7 +62,7 @@ pipeline {
                                 ${failedTests}
                                 Please review the build logs for more details.
                             """,
-                            to: cheparthyakash0925@gmail.com"
+                            to: "cheparthyakash0925@gmail.com"
                         )
                     } else {
                         echo "No failed tests found"
