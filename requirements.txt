@@ -1,0 +1,3 @@
+# requirements.txt (optional, only if you have additional dependencies)
+pytest
+requests
