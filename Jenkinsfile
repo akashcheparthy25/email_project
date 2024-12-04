@@ -27,22 +27,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run all test scripts
-                    sh './venv/bin/pytest tests/ --junitxml=test-results.xml'
+                    // Run all test scripts and output results
+                    sh './venv/bin/pytest tests/'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Archive test results
-            archiveArtifacts artifacts: 'test-results.xml', allowEmptyArchive: true
-
-            // Optional: Send email notification
-            mail to: 'your-email@example.com',
-                 subject: "Test Results for Build #${env.BUILD_NUMBER}",
-                 body: "The test run is complete. Please check the test results in Jenkins."
         }
     }
 }
